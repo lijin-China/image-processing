@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/history/history",
+    "pages/settings/settings",
+    "pages/tools/compress/compress",
+    "pages/tools/edit/edit",
+    "pages/tools/watermark/watermark",
+    "pages/tools/idphoto/idphoto",
+    "pages/tools/batch/batch",
+    "pages/tools/crop/crop",
+    "pages/tools/rotate/rotate",
+    "pages/tools/adjust/adjust"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "图像工具箱",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#8A8A8A",
+    "selectedColor": "#1E6FFF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "工具箱",
+        "iconPath": "images/tabbar/toolbox.png",
+        "selectedIconPath": "images/tabbar/toolbox-active.png"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "text": "历史",
+        "iconPath": "images/tabbar/history.png",
+        "selectedIconPath": "images/tabbar/history-active.png"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置",
+        "iconPath": "images/tabbar/settings.png",
+        "selectedIconPath": "images/tabbar/settings-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,140 @@
+<view class="page">
+  <view class="header">
+    <view class="headerIcon">⚙️</view>
+    <view class="headerContent">
+      <view class="title">设置</view>
+      <view class="subtitle">配置默认参数，提升使用效率</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="cardHeader">
+      <view class="cardIcon">📦</view>
+      <view class="cardTitle">压缩设置</view>
+    </view>
+    <view class="settingItem">
+      <view class="settingLabel">
+        <text class="labelText">默认质量</text>
+        <text class="labelDesc">按质量压缩时的默认值</text>
+      </view>
+      <view class="dragNumWrap">
+        <view class="dragNumInner" bindtouchstart="onQualityTouchStart" bindtouchmove="onQualityTouchMove"
+          bindtouchend="onQualityTouchEnd">
+          <text class="dragNumValue">{{settings.compress.quality}}%</text>
+          <text class="dragNumHint">← 滑动调整 →</text>
+        </view>
+      </view>
+    </view>
+    <view class="settingItem">
+      <view class="settingLabel">
+        <text class="labelText">默认目标大小</text>
+        <text class="labelDesc">按大小压缩时的默认值</text>
+      </view>
+      <view class="dragNumWrap">
+        <view class="dragNumInner" bindtouchstart="onTargetKBTouchStart" bindtouchmove="onTargetKBTouchMove"
+          bindtouchend="onTargetKBTouchEnd">
+          <text class="dragNumValue">{{settings.compress.targetKB}}KB</text>
+          <text class="dragNumHint">← 滑动调整 →</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="cardHeader">
+      <view class="cardIcon">💧</view>
+      <view class="cardTitle">水印设置</view>
+    </view>
+    <view class="settingItem">
+      <view class="settingLabel">
+        <text class="labelText">默认透明度</text>
+        <text class="labelDesc">水印文字的默认透明度</text>
+      </view>
+      <view class="dragNumWrap">
+        <view class="dragNumInner" bindtouchstart="onAlphaTouchStart" bindtouchmove="onAlphaTouchMove"
+          bindtouchend="onAlphaTouchEnd">
+          <text class="dragNumValue">{{settings.watermark.alpha}}%</text>
+          <text class="dragNumHint">← 滑动调整 →</text>
+        </view>
+      </view>
+    </view>
+    <view class="settingItem">
+      <view class="settingLabel">
+        <text class="labelText">默认位置</text>
+        <text class="labelDesc">水印显示的默认位置</text>
+      </view>
+      <view class="seg">
+        <view class="segItem {{settings.watermark.position === 'br' ? 'on' : ''}}" bindtap="onPositionChange"
+          data-position="br">右下</view>
+        <view class="segItem {{settings.watermark.position === 'bl' ? 'on' : ''}}" bindtap="onPositionChange"
+          data-position="bl">左下</view>
+        <view class="segItem {{settings.watermark.position === 'tr' ? 'on' : ''}}" bindtap="onPositionChange"
+          data-position="tr">右上</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="cardHeader">
+      <view class="cardIcon">📷</view>
+      <view class="cardTitle">证件照设置</view>
+    </view>
+    <view class="settingItem">
+      <view class="settingLabel">
+        <text class="labelText">默认规格</text>
+        <text class="labelDesc">证件照的默认尺寸</text>
+      </view>
+      <view class="seg">
+        <view class="segItem {{settings.idphoto.spec === '1' ? 'on' : ''}}" bindtap="onSpecChange" data-spec="1">一寸
+        </view>
+        <view class="segItem {{settings.idphoto.spec === '2' ? 'on' : ''}}" bindtap="onSpecChange" data-spec="2">二寸
+        </view>
+      </view>
+    </view>
+    <view class="settingItem">
+      <view class="settingLabel">
+        <text class="labelText">默认背景</text>
+        <text class="labelDesc">证件照的默认背景色</text>
+      </view>
+      <view class="colorRow">
+        <view class="colorItem {{settings.idphoto.bg === 'white' ? 'on' : ''}}"
+          style="background: #FFFFFF; border: 2rpx solid #E5E7EB;" bindtap="onBgChange" data-bg="white">
+          <view class="colorLabel">白底</view>
+        </view>
+        <view class="colorItem {{settings.idphoto.bg === 'blue' ? 'on' : ''}}"
+          style="background: #4169E1; border: 2rpx solid #E5E7EB;" bindtap="onBgChange" data-bg="blue">
+          <view class="colorLabel">蓝底</view>
+        </view>
+        <view class="colorItem {{settings.idphoto.bg === 'red' ? 'on' : ''}}"
+          style="background: #CD5C5C; border: 2rpx solid #E5E7EB;" bindtap="onBgChange" data-bg="red">
+          <view class="colorLabel">红底</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tipsCard">
+    <view class="tipsHeader">
+      <view class="tipsIcon">💡</view>
+      <view class="tipsTitle">小提示</view>
+    </view>
+    <view class="tipsContent">
+      <view class="tipsLine">
+        <view class="tipsDot"></view>
+        <text>这些设置只影响新创建的任务</text>
+      </view>
+      <view class="tipsLine">
+        <view class="tipsDot"></view>
+        <text>不会修改已保存的历史记录</text>
+      </view>
+      <view class="tipsLine">
+        <view class="tipsDot"></view>
+        <text>设置会自动保存，下次打开仍然有效</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <text class="footerText">图像工具箱 v1.0.0</text>
+  </view>
+</view>

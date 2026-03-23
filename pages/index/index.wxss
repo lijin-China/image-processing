@@ -1,0 +1,112 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx 24rpx;
+  padding-bottom: 48rpx;
+  background: linear-gradient(180deg, #F0F5FF 0%, #F6F7FB 100%);
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+  padding: 16rpx 8rpx;
+}
+
+.headerIcon {
+  font-size: 64rpx;
+  margin-right: 20rpx;
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 8rpx;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #6B7280;
+}
+
+.section {
+  margin-bottom: 40rpx;
+}
+
+.sectionTitle {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 20rpx;
+  padding-left: 4rpx;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.tool-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(30, 111, 255, 0.08);
+  padding: 32rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+  border: 2rpx solid transparent;
+}
+
+.tool-card:active {
+  transform: scale(0.98);
+  border-color: #BFDBFE;
+  box-shadow: 0 4rpx 16rpx rgba(30, 111, 255, 0.15);
+}
+
+.tool-icon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+
+.icon {
+  font-size: 44rpx;
+}
+
+.tool-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1F2937;
+  margin-bottom: 6rpx;
+}
+
+.tool-desc {
+  font-size: 22rpx;
+  color: #6B7280;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 48rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #E5E7EB;
+}
+
+.footer-text {
+  font-size: 24rpx;
+  color: #9CA3AF;
+}

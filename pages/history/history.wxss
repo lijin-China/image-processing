@@ -1,0 +1,139 @@
+.page {
+  min-height: 100vh;
+  padding: 24rpx;
+  padding-bottom: 48rpx;
+  background: linear-gradient(180deg, #F0F5FF 0%, #F6F7FB 100%);
+  box-sizing: border-box;
+}
+
+.header {
+  padding: 16rpx 8rpx 24rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.subtitle {
+  margin-top: 10rpx;
+  font-size: 28rpx;
+  color: #6B7280;
+}
+
+.card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(30, 111, 255, 0.08);
+  overflow: hidden;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  border-bottom: 2rpx solid #F3F4F6;
+}
+
+.cardTitle {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.textBtn {
+  background: transparent;
+  color: #1E6FFF;
+  font-size: 28rpx;
+  padding: 12rpx 16rpx;
+  font-weight: 500;
+}
+
+.list {
+  padding: 12rpx 16rpx 16rpx;
+}
+
+.dateHeader {
+  font-size: 26rpx;
+  color: #6B7280;
+  padding: 16rpx 8rpx 12rpx;
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 8rpx;
+}
+
+.thumb {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 16rpx;
+  background: #F3F4F6;
+  border: 2rpx solid #E5E7EB;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rpx;
+}
+
+.metaTitle {
+  font-size: 30rpx;
+  color: #1F2937;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metaSub {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pillBtn {
+  background: rgba(30, 111, 255, 0.10);
+  color: #1E6FFF;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  padding: 14rpx 24rpx;
+  margin-left: 16rpx;
+  font-weight: 500;
+}
+
+.empty {
+  margin-top: 160rpx;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.emptySub {
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  color: #6B7280;
+}
+
+.primaryBtn {
+  margin-top: 32rpx;
+  background: linear-gradient(135deg, #1E6FFF 0%, #3B82F6 100%);
+  color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx 32rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 24rpx rgba(30, 111, 255, 0.25);
+}

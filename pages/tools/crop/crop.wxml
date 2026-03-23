@@ -1,0 +1,67 @@
+<view class="page">
+  <view class="card">
+    <view class="cardTitle">选择图片</view>
+    <view class="imagePreview" wx:if="{{inputPath}}">
+      <image class="previewImage" src="{{inputPath}}" mode="aspectFill" bindtap="preview" data-url="{{inputPath}}" />
+      <view class="imageInfo">
+        <text class="infoText">已选择图片</text>
+        <text class="infoSize" wx:if="{{inputSizeKB}}">{{inputSizeKB}}KB</text>
+      </view>
+      <view class="changeBtn" bindtap="choose">更换</view>
+    </view>
+    <button class="primaryBtn" wx:else bindtap="choose">从相册/相机选择</button>
+  </view>
+
+  <view class="card" wx:if="{{inputPath}}">
+    <view class="cardTitle">裁剪设置</view>
+
+    <view class="row">
+      <text class="label">裁剪比例</text>
+      <view class="seg">
+        <view class="segItem {{ratio === 'free' ? 'on' : ''}}" bindtap="onRatioChange" data-ratio="free">自由</view>
+        <view class="segItem {{ratio === '1:1' ? 'on' : ''}}" bindtap="onRatioChange" data-ratio="1:1">1:1</view>
+        <view class="segItem {{ratio === '4:3' ? 'on' : ''}}" bindtap="onRatioChange" data-ratio="4:3">4:3</view>
+        <view class="segItem {{ratio === '16:9' ? 'on' : ''}}" bindtap="onRatioChange" data-ratio="16:9">16:9</view>
+      </view>
+    </view>
+
+    <view class="row">
+      <text class="label">预设尺寸</text>
+      <view class="seg">
+        <view class="segItem {{preset === 'none' ? 'on' : ''}}" bindtap="onPresetChange" data-preset="none">无</view>
+        <view class="segItem {{preset === 'square' ? 'on' : ''}}" bindtap="onPresetChange" data-preset="square">正方形
+        </view>
+        <view class="segItem {{preset === 'cover' ? 'on' : ''}}" bindtap="onPresetChange" data-preset="cover">封面</view>
+      </view>
+    </view>
+
+    <view class="row">
+      <button class="primaryBtn" disabled="{{busy}}" bindtap="run">开始裁剪</button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{result}}">
+    <view class="cardTitle">结果预览</view>
+    <view class="previewGrid">
+      <view class="previewItem">
+        <text class="previewLabel">原图</text>
+        <image class="previewImg" src="{{result.inputPath}}" mode="aspectFill" bindtap="preview"
+          data-url="{{result.inputPath}}" />
+        <text class="previewMeta">{{result.inputSizeKB}}KB</text>
+      </view>
+      <view class="previewItem">
+        <text class="previewLabel">裁剪后</text>
+        <image class="previewImg" src="{{result.outputPath}}" mode="aspectFill" bindtap="preview"
+          data-url="{{result.outputPath}}" />
+        <text class="previewMeta">{{result.outputSizeKB}}KB</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <button class="primaryBtn" bindtap="save">保存到相册</button>
+      <button class="ghostBtn" bindtap="share">分享</button>
+    </view>
+  </view>
+
+  <canvas type="2d" id="toolCanvas" class="hiddenCanvas"></canvas>
+</view>

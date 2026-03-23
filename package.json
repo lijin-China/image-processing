@@ -1,0 +1,14 @@
+{
+  "name": "image-toolbox",
+  "version": "1.0.0",
+  "description": "图像工具箱小程序 - 压缩、裁剪、水印、证件照、批量处理",
+  "keywords": [
+    "image",
+    "compress",
+    "watermark",
+    "idphoto",
+    "miniprogram"
+  ],
+  "author": "",
+  "license": "MIT"
+}

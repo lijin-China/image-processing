@@ -1,0 +1,90 @@
+<view class="page">
+  <view class="card">
+    <view class="cardTitle">选择图片</view>
+    <view class="imagePreview" wx:if="{{inputPath}}">
+      <image class="previewImage" src="{{inputPath}}" mode="aspectFill" bindtap="preview" data-url="{{inputPath}}" />
+      <view class="imageInfo">
+        <text class="infoText">已选择图片</text>
+        <text class="infoSize" wx:if="{{inputSizeKB}}">{{inputSizeKB}}KB</text>
+      </view>
+      <view class="changeBtn" bindtap="choose">更换</view>
+    </view>
+    <button class="primaryBtn" wx:else bindtap="choose">从相册/相机选择</button>
+  </view>
+
+  <view class="card" wx:if="{{inputPath}}">
+    <view class="cardTitle">水印参数</view>
+
+    <view class="seg">
+      <view class="segItem {{watermarkType === 'text' ? 'on' : ''}}" bindtap="onWatermarkTypeChange" data-type="text">文字
+      </view>
+      <view class="segItem {{watermarkType === 'image' ? 'on' : ''}}" bindtap="onWatermarkTypeChange" data-type="image">
+        图片</view>
+    </view>
+
+    <view class="row" wx:if="{{watermarkType === 'text'}}">
+      <text class="label">水印文字</text>
+      <input class="input" value="{{text}}" placeholder="例如 © 2024" bindinput="onTextChange" />
+    </view>
+
+    <view class="row" wx:else>
+      <text class="label">水印图片</text>
+      <view class="watermarkImageWrap">
+        <view wx:if="{{watermarkImage}}" class="watermarkPreviewWrap">
+          <image class="watermarkPreview" src="{{watermarkImage}}" mode="aspectFill" />
+          <view class="changeWatermarkBtn" bindtap="chooseWatermarkImage">更换</view>
+        </view>
+        <button wx:else class="ghostBtn smallBtn" bindtap="chooseWatermarkImage">选择图片</button>
+      </view>
+    </view>
+
+    <view class="row">
+      <text class="label">透明度</text>
+      <view class="dragNumWrap">
+        <view class="dragNumInner" bindtouchstart="onAlphaTouchStart" bindtouchmove="onAlphaTouchMove"
+          bindtouchend="onAlphaTouchEnd">
+          <text class="dragNumValue">{{alpha}}%</text>
+          <text class="dragNumHint">← 滑动调整 →</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="row">
+      <text class="label">位置</text>
+      <view class="seg">
+        <view class="segItem {{position === 'br' ? 'on' : ''}}" bindtap="onPositionChange" data-position="br">右下</view>
+        <view class="segItem {{position === 'bl' ? 'on' : ''}}" bindtap="onPositionChange" data-position="bl">左下</view>
+        <view class="segItem {{position === 'tr' ? 'on' : ''}}" bindtap="onPositionChange" data-position="tr">右上</view>
+      </view>
+    </view>
+
+    <view class="row">
+      <button class="primaryBtn" disabled="{{busy}}" bindtap="run">添加水印</button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{result}}">
+    <view class="cardTitle">结果预览</view>
+    <view class="previewGrid">
+      <view class="previewItem">
+        <text class="previewLabel">原图</text>
+        <image class="previewImg" src="{{result.inputPath}}" mode="aspectFill" bindtap="preview"
+          data-url="{{result.inputPath}}" />
+        <text class="previewMeta">{{result.inputSizeKB}}KB</text>
+      </view>
+      <view class="previewItem">
+        <text class="previewLabel">添加水印后</text>
+        <image class="previewImg" src="{{result.outputPath}}" mode="aspectFill" bindtap="preview"
+          data-url="{{result.outputPath}}" />
+        <text class="previewMeta">{{result.outputSizeKB}}KB</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <button class="primaryBtn" bindtap="save">保存到相册</button>
+      <button class="ghostBtn" bindtap="share">分享</button>
+    </view>
+  </view>
+
+  <canvas type="2d" id="toolCanvas" class="hiddenCanvas"></canvas>
+</view>

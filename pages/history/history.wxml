@@ -1,0 +1,37 @@
+<view class="page">
+  <view class="header">
+    <view class="title">历史记录</view>
+    <view class="subtitle">最近导出的图片会显示在这里</view>
+  </view>
+
+  <view class="card" wx:if="{{groupedItems.length}}">
+    <view class="cardHeader">
+      <text class="cardTitle">最近</text>
+      <button class="textBtn" bindtap="confirmClear">清空</button>
+    </view>
+
+    <view class="list">
+      <view wx:for="{{groupedItems}}" wx:key="date">
+        <view class="dateHeader">{{item.date}}</view>
+        <view class="row" wx:for="{{item.items}}" wx:key="id" bindtap="preview"
+          data-url="{{item.outputPath || item.inputPath}}">
+          <image class="thumb" src="{{item.outputPath || item.inputPath}}" mode="aspectFill" />
+          <view class="meta">
+            <view class="metaTitle">{{item.title || item.type}}</view>
+            <view class="metaSub">
+              <text>{{formatTime(item.createdAt)}}</text>
+              <text wx:if="{{item.outputSizeKB}}"> · {{item.outputSizeKB}}KB</text>
+            </view>
+          </view>
+          <button class="pillBtn" catchtap="save" data-path="{{item.outputPath || item.inputPath}}">保存</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <view class="emptyTitle">还没有历史记录</view>
+    <view class="emptySub">去工具箱处理图片后会自动保存记录</view>
+    <button class="primaryBtn" bindtap="goToolbox">去工具箱</button>
+  </view>
+</view>

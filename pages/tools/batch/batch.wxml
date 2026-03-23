@@ -1,0 +1,148 @@
+<view class="page">
+  <view class="card">
+    <view class="cardTitle">选择图片</view>
+    <view class="imageListPreview" wx:if="{{inputPaths.length}}">
+      <view class="imageListHeader">
+        <text class="imageListCount">已选择 {{inputPaths.length}} 张图片</text>
+        <view class="changeBtn" bindtap="choose">重新选择</view>
+      </view>
+      <view class="imageListWrap">
+        <view class="imageListItem" wx:for="{{inputPaths}}" wx:key="{{index}}">
+          <image class="listItemImage" src="{{item}}" mode="aspectFill" bindtap="preview" data-url="{{item}}"
+            data-index="{{index}}" />
+          <view class="removeBtn" catchtap="removeImage" data-index="{{index}}">×</view>
+        </view>
+        <view class="addMoreBtn" bindtap="choose" wx:if="{{inputPaths.length < 9}}">
+          <text class="addMoreIcon">+</text>
+          <text class="addMoreText">添加</text>
+        </view>
+      </view>
+    </view>
+    <button class="primaryBtn" wx:else bindtap="choose">从相册选择多张</button>
+    <view class="hint" wx:if="{{!inputPaths.length}}">最多选择 9 张</view>
+  </view>
+
+  <view class="card" wx:if="{{inputPaths.length}}">
+    <view class="cardTitle">批量操作</view>
+
+    <view class="seg">
+      <view class="segItem {{type === 'compress' ? 'on' : ''}}" bindtap="onTypeChange" data-type="compress">压缩</view>
+      <view class="segItem {{type === 'watermark' ? 'on' : ''}}" bindtap="onTypeChange" data-type="watermark">水印</view>
+      <view class="segItem {{type === 'edit' ? 'on' : ''}}" bindtap="onTypeChange" data-type="edit">改尺寸</view>
+    </view>
+
+    <!-- 压缩参数 -->
+    <view wx:if="{{type === 'compress'}}">
+      <view class="seg">
+        <view class="segItem {{mode === 'quality' ? 'on' : ''}}" bindtap="setMode" data-mode="quality">按质量</view>
+        <view class="segItem {{mode === 'targetSize' ? 'on' : ''}}" bindtap="setMode" data-mode="targetSize">按目标大小
+        </view>
+      </view>
+
+      <view class="row" wx:if="{{mode === 'quality'}}">
+        <text class="label">质量</text>
+        <view class="dragNumWrap">
+          <view class="dragNumInner" bindtouchstart="onQualityTouchStart" bindtouchmove="onQualityTouchMove"
+            bindtouchend="onQualityTouchEnd">
+            <text class="dragNumValue">{{quality}}</text>
+            <text class="dragNumHint">← 滑动调整 →</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="row" wx:else>
+        <text class="label">目标(KB)</text>
+        <input class="input" type="number" value="{{targetKB}}" placeholder="例如 200" bindinput="onTargetKB" />
+      </view>
+    </view>
+
+    <!-- 水印参数 -->
+    <view wx:if="{{type === 'watermark'}}">
+      <view class="row">
+        <text class="label">水印文字</text>
+        <input class="input" value="{{text}}" placeholder="例如 © 2024" bindinput="onTextChange" />
+      </view>
+
+      <view class="row">
+        <text class="label">透明度</text>
+        <view class="dragNumWrap">
+          <view class="dragNumInner" bindtouchstart="onAlphaTouchStart" bindtouchmove="onAlphaTouchMove"
+            bindtouchend="onAlphaTouchEnd">
+            <text class="dragNumValue">{{alpha}}%</text>
+            <text class="dragNumHint">← 滑动调整 →</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="row">
+        <text class="label">位置</text>
+        <view class="seg">
+          <view class="segItem {{position === 'br' ? 'on' : ''}}" bindtap="onPositionChange" data-position="br">右下
+          </view>
+          <view class="segItem {{position === 'bl' ? 'on' : ''}}" bindtap="onPositionChange" data-position="bl">左下
+          </view>
+          <view class="segItem {{position === 'tr' ? 'on' : ''}}" bindtap="onPositionChange" data-position="tr">右上
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 改尺寸参数 -->
+    <view wx:if="{{type === 'edit'}}">
+      <view class="row">
+        <text class="label">输出宽度</text>
+        <input class="input" type="number" value="{{outW}}" placeholder="例如 1080" bindinput="onOutW" />
+      </view>
+
+      <view class="row">
+        <text class="label">输出高度</text>
+        <input class="input" type="number" value="{{outH}}" placeholder="例如 1920" bindinput="onOutH" />
+      </view>
+
+      <view class="row">
+        <text class="label">适配模式</text>
+        <view class="seg">
+          <view class="segItem {{fit === 'contain' ? 'on' : ''}}" bindtap="onFitChange" data-fit="contain">适应</view>
+          <view class="segItem {{fit === 'cover' ? 'on' : ''}}" bindtap="onFitChange" data-fit="cover">裁剪</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="row">
+      <button class="primaryBtn" disabled="{{busy}}" bindtap="run">开始批量处理</button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{results.length}}">
+    <view class="cardTitle">处理结果</view>
+    <view class="progress" wx:if="{{busy}}">
+      <view class="progressBar">
+        <view class="progressFill" style="width: {{progress}}%"></view>
+      </view>
+      <text class="progressText">{{progress}}% ({{processed}}/{{total}})</text>
+    </view>
+
+    <view class="resultList" wx:else>
+      <view class="resultItem" wx:for="{{results}}" wx:key="{{index}}">
+        <image class="resultThumb"
+          src="{{item.ok && item.result ? (item.result.outputPath || item.result.inputPath) : ''}}" mode="aspectFill"
+          bindtap="preview"
+          data-url="{{item.ok && item.result ? (item.result.outputPath || item.result.inputPath) : ''}}" />
+        <view class="resultMeta">
+          <text class="resultTitle">{{item.ok ? '成功' : '失败'}}</text>
+          <text class="resultSub" wx:if="{{item.ok && item.result}}">{{item.result.outputSizeKB}}KB</text>
+          <text class="resultSub" wx:else>{{item.error && item.error.message ? item.error.message : '未知错误'}}</text>
+        </view>
+        <button class="pillBtn" wx:if="{{item.ok && item.result}}" bindtap="save"
+          data-path="{{item.result.outputPath}}">保存</button>
+      </view>
+    </view>
+
+    <view class="actions" wx:if="{{!busy && results.length}}">
+      <button class="primaryBtn" bindtap="saveAll">全部保存</button>
+      <button class="ghostBtn" bindtap="shareAll">分享</button>
+    </view>
+  </view>
+
+  <canvas type="2d" id="toolCanvas" class="hiddenCanvas"></canvas>
+</view>

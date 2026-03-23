@@ -1,0 +1,68 @@
+<view class="page">
+  <view class="card">
+    <view class="cardTitle">选择图片</view>
+    <view class="imagePreview" wx:if="{{inputPath}}">
+      <image class="previewImage" src="{{inputPath}}" mode="aspectFill" bindtap="preview" data-url="{{inputPath}}" />
+      <view class="imageInfo">
+        <text class="infoText">已选择图片</text>
+        <text class="infoSize" wx:if="{{inputSizeKB}}">{{inputSizeKB}}KB</text>
+      </view>
+      <view class="changeBtn" bindtap="choose">更换</view>
+    </view>
+    <button class="primaryBtn" wx:else bindtap="choose">从相册/相机选择</button>
+  </view>
+
+  <view class="card" wx:if="{{inputPath}}">
+    <view class="cardTitle">压缩参数</view>
+
+    <view class="seg">
+      <view class="segItem {{mode === 'quality' ? 'on' : ''}}" bindtap="setMode" data-mode="quality">按质量</view>
+      <view class="segItem {{mode === 'targetSize' ? 'on' : ''}}" bindtap="setMode" data-mode="targetSize">按目标大小</view>
+    </view>
+
+    <view class="row" wx:if="{{mode === 'quality'}}">
+      <text class="label">质量</text>
+      <view class="dragNumWrap">
+        <view class="dragNumInner" bindtouchstart="onQualityTouchStart" bindtouchmove="onQualityTouchMove"
+          bindtouchend="onQualityTouchEnd">
+          <text class="dragNumValue">{{quality}}</text>
+          <text class="dragNumHint">← 滑动调整 →</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="row" wx:else>
+      <text class="label">目标(KB)</text>
+      <input class="input" type="number" value="{{targetKB}}" placeholder="例如 200" bindinput="onTargetKB" />
+    </view>
+
+    <view class="row">
+      <button class="primaryBtn" disabled="{{busy}}" bindtap="run">开始压缩</button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{result}}">
+    <view class="cardTitle">结果预览</view>
+    <view class="previewGrid">
+      <view class="previewItem">
+        <text class="previewLabel">原图</text>
+        <image class="previewImg" src="{{result.inputPath}}" mode="aspectFill" bindtap="preview"
+          data-url="{{result.inputPath}}" />
+        <text class="previewMeta">{{result.inputSizeKB}}KB</text>
+      </view>
+      <view class="previewItem">
+        <text class="previewLabel">压缩后</text>
+        <image class="previewImg" src="{{result.outputPath}}" mode="aspectFill" bindtap="preview"
+          data-url="{{result.outputPath}}" />
+        <text class="previewMeta">{{result.outputSizeKB}}KB · 省{{savedPercent}}%</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <button class="primaryBtn" bindtap="save">保存到相册</button>
+      <button class="ghostBtn" bindtap="share">分享</button>
+    </view>
+  </view>
+
+  <canvas type="2d" id="toolCanvas" class="hiddenCanvas"></canvas>
+</view>
