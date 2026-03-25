@@ -41,12 +41,36 @@
         <view class="tool-name">图片旋转</view>
         <view class="tool-desc">旋转和翻转图片</view>
       </view>
+
+      <view class="tool-card" bindtap="navigateToTool" data-tool="convert">
+        <view class="tool-icon">
+          <text class="icon">🔀</text>
+        </view>
+        <view class="tool-name">格式转换</view>
+        <view class="tool-desc">PNG/JPG互转</view>
+      </view>
+
+      <view class="tool-card" bindtap="navigateToTool" data-tool="stitch">
+        <view class="tool-icon">
+          <text class="icon">🧩</text>
+        </view>
+        <view class="tool-name">图片拼接</view>
+        <view class="tool-desc">长图和九宫格</view>
+      </view>
     </view>
   </view>
 
   <view class="section">
     <view class="sectionTitle">美化工具</view>
     <view class="tool-grid">
+      <view class="tool-card" bindtap="navigateToTool" data-tool="filter">
+        <view class="tool-icon">
+          <text class="icon">🎞️</text>
+        </view>
+        <view class="tool-name">图片滤镜</view>
+        <view class="tool-desc">复古、黑白等多种滤镜</view>
+      </view>
+
       <view class="tool-card" bindtap="navigateToTool" data-tool="adjust">
         <view class="tool-icon">
           <text class="icon">🎨</text>
@@ -61,6 +85,14 @@
         </view>
         <view class="tool-name">添加水印</view>
         <view class="tool-desc">文字或图片水印</view>
+      </view>
+
+      <view class="tool-card" bindtap="navigateToTool" data-tool="mosaic">
+        <view class="tool-icon">
+          <text class="icon">🔲</text>
+        </view>
+        <view class="tool-name">马赛克</view>
+        <view class="tool-desc">局部打码保护隐私</view>
       </view>
     </view>
   </view>

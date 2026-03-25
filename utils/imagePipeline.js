@@ -195,26 +195,114 @@ const BG_COLORS = {
   red: '#CD5C5C'
 };
 
-async function removeBackground (src) {
-  if (typeof wx.removeBackground !== 'function') {
-    console.warn('wx.removeBackground 不可用，当前基础库版本可能过低');
-    return { path: src, removed: false, error: 'API不可用' };
+/**
+ * 移除图片背景（AI抠图）
+ * 优先使用 wx.removeBackground，不可用时调用云函数
+ */
+async function removeBackground(src) {
+  // 方案1: 尝试使用微信原生 API
+  if (typeof wx.removeBackground === 'function') {
+    try {
+      console.log('尝试使用 wx.removeBackground...');
+      const res = await new Promise((resolve, reject) => {
+        wx.removeBackground({
+          src: src,
+          success: resolve,
+          fail: reject
+        });
+      });
+      if (res.tempFilePath) {
+        console.log('wx.removeBackground 成功');
+        return { path: res.tempFilePath, removed: true };
+      }
+    } catch (e) {
+      console.warn('wx.removeBackground 失败:', e);
+    }
   }
+
+  // 方案2: 调用云函数
   try {
-    console.log('开始调用 wx.removeBackground...');
-    const res = await wx.removeBackground({ src });
-    console.log('wx.removeBackground 成功:', res);
-    return { path: res.tempFilePath, removed: true };
+    console.log('尝试使用云函数抠图...');
+    return await removeBackgroundWithCloud(src);
   } catch (e) {
-    console.error('背景移除失败:', e);
-    return { path: src, removed: false, error: e.errMsg || e.message || '未知错误' };
+    console.error('云函数抠图失败:', e);
+    return {
+      path: src,
+      removed: false,
+      error: e.message || 'AI抠图服务暂不可用'
+    };
   }
 }
 
-async function generateIdPhoto ({ canvas, src, outW, outH, bgColor = 'white' }) {
+/**
+ * 使用云函数抠图
+ */
+async function removeBackgroundWithCloud(src) {
+  // 1. 上传图片到云存储
+  wx.showLoading({ title: '上传图片...', mask: true });
+
+  const cloudPath = `temp/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+  const uploadRes = await wx.cloud.uploadFile({
+    cloudPath: cloudPath,
+    filePath: src
+  });
+
+  if (!uploadRes.fileID) {
+    throw new Error('上传图片失败');
+  }
+
+  // 2. 调用云函数
+  wx.showLoading({ title: 'AI抠图中...', mask: true });
+
+  const cloudRes = await wx.cloud.callFunction({
+    name: 'removeBg',
+    data: {
+      fileID: uploadRes.fileID
+    }
+  });
+
+  if (!cloudRes.result || !cloudRes.result.success) {
+    throw new Error(cloudRes.result?.error || '抠图失败');
+  }
+
+  // 3. 下载结果图片
+  wx.showLoading({ title: '下载结果...', mask: true });
+
+  const downloadRes = await wx.cloud.downloadFile({
+    fileID: cloudRes.result.fileID
+  });
+
+  if (!downloadRes.tempFilePath) {
+    throw new Error('下载结果失败');
+  }
+
+  // 4. 清理临时文件
+  wx.cloud.deleteFile({
+    fileList: [uploadRes.fileID, cloudRes.result.fileID]
+  }).catch(() => {});
+
+  wx.hideLoading();
+
+  return {
+    path: downloadRes.tempFilePath,
+    removed: true
+  };
+}
+
+async function generateIdPhoto ({ canvas, src, outW, outH, bgColor = 'white', skipRemoveBg = false }) {
   const bg = BG_COLORS[bgColor] || BG_COLORS.white;
 
-  const { path: processedSrc, removed: bgRemoved, error: bgRemoveError } = await removeBackground(src);
+  // 如果跳过抠图或 API 不可用，直接使用原图
+  let processedSrc = src;
+  let bgRemoved = false;
+  let bgRemoveError = null;
+
+  if (!skipRemoveBg) {
+    const result = await removeBackground(src);
+    processedSrc = result.path;
+    bgRemoved = result.removed;
+    bgRemoveError = result.error;
+  }
 
   const outputPath = await drawToCanvasAndExport({
     canvas,
@@ -391,6 +479,230 @@ async function simpleBeauty ({ canvas, src, brightness = 0, contrast = 0 }) {
   });
 }
 
+// 滤镜预设配置
+const FILTER_PRESETS = {
+  none: { brightness: 0, contrast: 0, saturation: 100, sepia: 0, hueRotate: 0 },
+  vintage: { brightness: 5, contrast: 10, saturation: 70, sepia: 30, hueRotate: 0 },
+  blackwhite: { brightness: 0, contrast: 20, saturation: 0, sepia: 0, hueRotate: 0 },
+  cold: { brightness: 0, contrast: 5, saturation: 90, sepia: 0, hueRotate: -15 },
+  warm: { brightness: 5, contrast: 0, saturation: 110, sepia: 15, hueRotate: 0 },
+  drama: { brightness: -5, contrast: 30, saturation: 120, sepia: 0, hueRotate: 0 },
+  fade: { brightness: 10, contrast: -15, saturation: 80, sepia: 10, hueRotate: 0 },
+  vivid: { brightness: 5, contrast: 15, saturation: 140, sepia: 0, hueRotate: 0 },
+  mono: { brightness: 0, contrast: 10, saturation: 0, sepia: 0, hueRotate: 0 },
+  noir: { brightness: -5, contrast: 25, saturation: 0, sepia: 0, hueRotate: 0 }
+};
+
+async function applyFilter ({ canvas, src, filter = 'none' }) {
+  const preset = FILTER_PRESETS[filter] || FILTER_PRESETS.none;
+
+  return drawToCanvasAndExport({
+    canvas,
+    src,
+    fileType: 'jpg',
+    quality: 0.95,
+    draw: async (ctx, { img, width, height }) => {
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // 获取图像数据进行像素级处理
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+
+      const brightness = preset.brightness || 0;
+      const contrast = (preset.contrast || 0) / 100 + 1;
+      const saturation = (preset.saturation || 100) / 100;
+      const sepia = (preset.sepia || 0) / 100;
+
+      for (let i = 0; i < data.length; i += 4) {
+        let r = data[i];
+        let g = data[i + 1];
+        let b = data[i + 2];
+
+        // 亮度
+        if (brightness !== 0) {
+          const bright = brightness * 2.55;
+          r += bright;
+          g += bright;
+          b += bright;
+        }
+
+        // 对比度
+        if (contrast !== 1) {
+          r = (r - 128) * contrast + 128;
+          g = (g - 128) * contrast + 128;
+          b = (b - 128) * contrast + 128;
+        }
+
+        // 饱和度
+        if (saturation !== 1) {
+          const gray = 0.2989 * r + 0.587 * g + 0.114 * b;
+          r = gray + saturation * (r - gray);
+          g = gray + saturation * (g - gray);
+          b = gray + saturation * (b - gray);
+        }
+
+        // 怀旧色调
+        if (sepia > 0) {
+          const tr = 0.393 * r + 0.769 * g + 0.189 * b;
+          const tg = 0.349 * r + 0.686 * g + 0.168 * b;
+          const tb = 0.272 * r + 0.534 * g + 0.131 * b;
+          r = r + sepia * (tr - r);
+          g = g + sepia * (tg - g);
+          b = b + sepia * (tb - b);
+        }
+
+        // 限制范围
+        data[i] = Math.max(0, Math.min(255, r));
+        data[i + 1] = Math.max(0, Math.min(255, g));
+        data[i + 2] = Math.max(0, Math.min(255, b));
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+    }
+  });
+}
+
+// 马赛克效果
+async function applyMosaic ({ canvas, src, blockSize = 20, regions = [] }) {
+  return drawToCanvasAndExport({
+    canvas,
+    src,
+    fileType: 'jpg',
+    quality: 0.95,
+    draw: async (ctx, { img, width, height }) => {
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+
+      // 如果没有指定区域，对整个图片应用马赛克
+      if (regions.length === 0) {
+        regions = [{ x: 0, y: 0, w: width, h: height }];
+      }
+
+      for (const region of regions) {
+        const { x: rx, y: ry, w: rw, h: rh } = region;
+        const size = Math.max(5, Math.min(blockSize, 50));
+
+        for (let y = ry; y < ry + rh; y += size) {
+          for (let x = rx; x < rx + rw; x += size) {
+            // 计算块的平均颜色
+            let r = 0, g = 0, b = 0, count = 0;
+
+            for (let dy = 0; dy < size && y + dy < height; dy++) {
+              for (let dx = 0; dx < size && x + dx < width; dx++) {
+                const px = Math.floor(x + dx);
+                const py = Math.floor(y + dy);
+                if (px >= 0 && px < width && py >= 0 && py < height) {
+                  const idx = (py * width + px) * 4;
+                  r += data[idx];
+                  g += data[idx + 1];
+                  b += data[idx + 2];
+                  count++;
+                }
+              }
+            }
+
+            if (count > 0) {
+              r = Math.round(r / count);
+              g = Math.round(g / count);
+              b = Math.round(b / count);
+
+              // 填充块
+              for (let dy = 0; dy < size && y + dy < height; dy++) {
+                for (let dx = 0; dx < size && x + dx < width; dx++) {
+                  const px = Math.floor(x + dx);
+                  const py = Math.floor(y + dy);
+                  if (px >= 0 && px < width && py >= 0 && py < height) {
+                    const idx = (py * width + px) * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+    }
+  });
+}
+
+// 图片拼接
+async function stitchImages ({ canvas, images, direction = 'vertical', gap = 0 }) {
+  if (!images || images.length === 0) {
+    throw new Error('至少需要一张图片');
+  }
+
+  // 加载所有图片
+  const imgInfos = [];
+  let totalWidth = 0, totalHeight = 0;
+  let maxWidth = 0, maxHeight = 0;
+
+  for (const src of images) {
+    const info = await wx.getImageInfo({ src });
+    imgInfos.push({ src, ...info });
+    maxWidth = Math.max(maxWidth, info.width);
+    maxHeight = Math.max(maxHeight, info.height);
+  }
+
+  if (direction === 'vertical') {
+    totalWidth = maxWidth;
+    totalHeight = imgInfos.reduce((sum, info) => sum + info.height, 0) + gap * (images.length - 1);
+  } else {
+    totalWidth = imgInfos.reduce((sum, info) => sum + info.width, 0) + gap * (images.length - 1);
+    totalHeight = maxHeight;
+  }
+
+  canvas.width = totalWidth;
+  canvas.height = totalHeight;
+  const ctx = canvas.getContext('2d');
+
+  // 填充白色背景
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+  let currentPos = 0;
+  for (let i = 0; i < imgInfos.length; i++) {
+    const info = imgInfos[i];
+    const img = await loadImage(canvas, info.src);
+
+    if (direction === 'vertical') {
+      const x = Math.round((totalWidth - info.width) / 2);
+      ctx.drawImage(img, x, currentPos, info.width, info.height);
+      currentPos += info.height + gap;
+    } else {
+      const y = Math.round((totalHeight - info.height) / 2);
+      ctx.drawImage(img, currentPos, y, info.width, info.height);
+      currentPos += info.width + gap;
+    }
+  }
+
+  const out = await wx.canvasToTempFilePath({ canvas, fileType: 'jpg', quality: 0.95 });
+  return out.tempFilePath;
+}
+
+// 格式转换
+async function convertFormat ({ canvas, src, format = 'jpg', quality = 92 }) {
+  return drawToCanvasAndExport({
+    canvas,
+    src,
+    fileType: format,
+    quality: quality / 100,
+    draw: async (ctx, { img, width, height }) => {
+      // PNG转JPG需要填充白色背景
+      if (format === 'jpg') {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+    }
+  });
+}
+
 const TASK_HANDLERS = {
   compress: async (t) => {
     const title = t.mode === 'targetSize' ? `压缩到 ${t.targetKB}KB` : `压缩质量 ${t.quality}`;
@@ -438,7 +750,8 @@ const TASK_HANDLERS = {
       src: t.inputPath,
       outW: t.outW,
       outH: t.outH,
-      bgColor: t.bgColor || 'white'
+      bgColor: t.bgColor || 'white',
+      skipRemoveBg: t.skipRemoveBg || false
     });
     return { title: '证件照', outputPath, bgRemoved, bgRemoveError };
   },
@@ -469,25 +782,69 @@ const TASK_HANDLERS = {
       saturation: t.saturation
     });
     return { title: '图片调色', outputPath };
+  },
+  filter: async (t) => {
+    const outputPath = await applyFilter({
+      canvas: t.canvas,
+      src: t.inputPath,
+      filter: t.filter || 'none'
+    });
+    return { title: '图片滤镜', outputPath };
+  },
+  mosaic: async (t) => {
+    const outputPath = await applyMosaic({
+      canvas: t.canvas,
+      src: t.inputPath,
+      blockSize: t.blockSize || 20,
+      regions: t.regions || []
+    });
+    return { title: '马赛克', outputPath };
+  },
+  stitch: async (t) => {
+    const outputPath = await stitchImages({
+      canvas: t.canvas,
+      images: t.images,
+      direction: t.direction || 'vertical',
+      gap: t.gap || 0
+    });
+    return { title: '图片拼接', outputPath };
+  },
+  convert: async (t) => {
+    const outputPath = await convertFormat({
+      canvas: t.canvas,
+      src: t.inputPath,
+      format: t.format || 'jpg',
+      quality: t.quality || 92
+    });
+    return { title: '格式转换', outputPath };
   }
 };
 
 async function runTask (task) {
   const t = task || {};
-  const inputPath = t.inputPath;
-  if (!inputPath) throw new Error('inputPath required');
-
   const handler = TASK_HANDLERS[t.type];
   if (!handler) throw new Error(`Unknown task type: ${t.type}`);
 
+  // stitch 任务使用 images 数组，不需要 inputPath
+  if (t.type !== 'stitch') {
+    if (!t.inputPath) throw new Error('inputPath required');
+  }
+
   const { title, outputPath, bgRemoved, bgRemoveError } = await handler(t);
-  const [inKB, outKB] = await Promise.all([getFileSizeKB(inputPath), getFileSizeKB(outputPath)]);
+
+  // 获取文件大小
+  let inKB = 0, outKB = 0;
+  if (t.type === 'stitch') {
+    outKB = await getFileSizeKB(outputPath);
+  } else {
+    [inKB, outKB] = await Promise.all([getFileSizeKB(t.inputPath), getFileSizeKB(outputPath)]);
+  }
 
   const entry = {
     id: uid(),
     type: t.type,
     title,
-    inputPath,
+    inputPath: t.inputPath || '',
     outputPath,
     inputSizeKB: inKB,
     outputSizeKB: outKB,
@@ -523,5 +880,6 @@ async function runBatch (tasks, onProgress) {
 module.exports = {
   runTask,
   runBatch,
-  getFileSizeKB
+  getFileSizeKB,
+  FILTER_PRESETS
 };

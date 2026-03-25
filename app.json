@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/community/community",
     "pages/history/history",
     "pages/settings/settings",
     "pages/tools/compress/compress",
@@ -10,7 +11,11 @@
     "pages/tools/batch/batch",
     "pages/tools/crop/crop",
     "pages/tools/rotate/rotate",
-    "pages/tools/adjust/adjust"
+    "pages/tools/adjust/adjust",
+    "pages/tools/filter/filter",
+    "pages/tools/mosaic/mosaic",
+    "pages/tools/stitch/stitch",
+    "pages/tools/convert/convert"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -29,6 +34,12 @@
         "text": "工具箱",
         "iconPath": "images/tabbar/toolbox.png",
         "selectedIconPath": "images/tabbar/toolbox-active.png"
+      },
+      {
+        "pagePath": "pages/community/community",
+        "text": "朋友圈",
+        "iconPath": "images/tabbar/community.png",
+        "selectedIconPath": "images/tabbar/community-active.png"
       },
       {
         "pagePath": "pages/history/history",

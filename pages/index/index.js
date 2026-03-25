@@ -16,7 +16,11 @@ Page({
       'batch': '/pages/tools/batch/batch',
       'crop': '/pages/tools/crop/crop',
       'rotate': '/pages/tools/rotate/rotate',
-      'adjust': '/pages/tools/adjust/adjust'
+      'adjust': '/pages/tools/adjust/adjust',
+      'filter': '/pages/tools/filter/filter',
+      'mosaic': '/pages/tools/mosaic/mosaic',
+      'stitch': '/pages/tools/stitch/stitch',
+      'convert': '/pages/tools/convert/convert'
     };
 
     const url = toolMap[tool];

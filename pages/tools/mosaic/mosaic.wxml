@@ -13,30 +13,38 @@
   </view>
 
   <view class="card" wx:if="{{inputPath}}">
-    <view class="cardTitle">证件照参数</view>
+    <view class="cardTitle">马赛克参数</view>
 
     <view class="row">
-      <text class="label">规格</text>
-      <view class="seg">
-        <view class="segItem {{spec === '1' ? 'on' : ''}}" bindtap="onSpecChange" data-spec="1">一寸</view>
-        <view class="segItem {{spec === '2' ? 'on' : ''}}" bindtap="onSpecChange" data-spec="2">二寸</view>
+      <text class="label">块大小</text>
+      <view class="dragNumWrap">
+        <view class="dragNumInner" bindtouchstart="onBlockSizeTouchStart" bindtouchmove="onBlockSizeTouchMove"
+          bindtouchend="onBlockSizeTouchEnd">
+          <text class="dragNumValue">{{blockSize}}</text>
+          <text class="dragNumHint">← 滑动调整 →</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="tipsCard">
+      <view class="tipsHeader">
+        <view class="tipsIcon">💡</view>
+        <view class="tipsTitle">小提示</view>
+      </view>
+      <view class="tipsContent">
+        <view class="tipsLine">
+          <view class="tipsDot"></view>
+          <text>块大小越大，马赛克效果越明显</text>
+        </view>
+        <view class="tipsLine">
+          <view class="tipsDot"></view>
+          <text>建议使用 10-30 之间的数值</text>
+        </view>
       </view>
     </view>
 
     <view class="row">
-      <text class="label">背景色</text>
-      <view class="colorRow">
-        <view class="colorItem {{bg === 'white' ? 'on' : ''}}" style="background: #FFFFFF; border: 2rpx solid #E5E7EB;"
-          bindtap="onBgChange" data-bg="white"></view>
-        <view class="colorItem {{bg === 'blue' ? 'on' : ''}}" style="background: #4169E1; border: 2rpx solid #E5E7EB;"
-          bindtap="onBgChange" data-bg="blue"></view>
-        <view class="colorItem {{bg === 'red' ? 'on' : ''}}" style="background: #CD5C5C; border: 2rpx solid #E5E7EB;"
-          bindtap="onBgChange" data-bg="red"></view>
-      </view>
-    </view>
-
-    <view class="row">
-      <button class="primaryBtn" disabled="{{busy}}" bindtap="run">生成证件照</button>
+      <button class="primaryBtn" disabled="{{busy}}" bindtap="apply">应用马赛克</button>
     </view>
   </view>
 
@@ -50,7 +58,7 @@
         <text class="previewMeta">{{result.inputSizeKB}}KB</text>
       </view>
       <view class="previewItem">
-        <text class="previewLabel">证件照</text>
+        <text class="previewLabel">马赛克效果</text>
         <image class="previewImg" src="{{result.outputPath}}" mode="aspectFill" bindtap="preview"
           data-url="{{result.outputPath}}" />
         <text class="previewMeta">{{result.outputSizeKB}}KB</text>
@@ -59,19 +67,7 @@
 
     <view class="actions">
       <button class="primaryBtn" bindtap="save">保存到相册</button>
-      <button class="ghostBtn" bindtap="shareToTimeline">分享到朋友圈</button>
-    </view>
-    <view class="tipsCard">
-      <view class="tipsContent">
-        <view class="tipsLine">
-          <text class="tipsDot"></text>
-          <text>点击"分享到朋友圈"可直接发布</text>
-        </view>
-        <view class="tipsLine">
-          <text class="tipsDot"></text>
-          <text>或保存到相册后，在微信朋友圈选择图片发布</text>
-        </view>
-      </view>
+      <button class="ghostBtn" bindtap="share">分享</button>
     </view>
   </view>
 

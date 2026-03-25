@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="card">
+    <view class="cardHeader">
+      <view class="cardTitle">选择图片</view>
+      <button class="textBtn" wx:if="{{images.length}}" bindtap="clearImages">清空</button>
+    </view>
+
+    <view class="imageList" wx:if="{{images.length}}">
+      <view class="imageItem" wx:for="{{images}}" wx:key="*this">
+        <image class="imageThumb" src="{{item}}" mode="aspectFill" bindtap="preview" data-url="{{item}}" />
+        <view class="imageRemove" bindtap="removeImage" data-index="{{index}}">×</view>
+        <view class="imageIndex">{{index + 1}}</view>
+      </view>
+      <view class="imageItem addBtn" wx:if="{{images.length < 9}}" bindtap="chooseImages">
+        <text class="addIcon">+</text>
+        <text class="addText">添加</text>
+      </view>
+    </view>
+
+    <button class="primaryBtn" wx:else bindtap="chooseImages">从相册选择图片</button>
+
+    <view class="tipsCard" wx:if="{{images.length === 0}}">
+      <view class="tipsContent">
+        <view class="tipsLine">
+          <view class="tipsDot"></view>
+          <text>请选择2-9张图片进行拼接</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{images.length >= 2}}">
+    <view class="cardTitle">拼接设置</view>
+
+    <view class="row">
+      <text class="label">方向</text>
+      <view class="seg">
+        <view class="segItem {{direction === 'vertical' ? 'on' : ''}}" bindtap="setDirection" data-direction="vertical">纵向</view>
+        <view class="segItem {{direction === 'horizontal' ? 'on' : ''}}" bindtap="setDirection" data-direction="horizontal">横向</view>
+      </view>
+    </view>
+
+    <view class="row">
+      <text class="label">间距</text>
+      <view class="dragNumWrap">
+        <view class="dragNumInner">
+          <text class="dragNumValue">{{gap}}</text>
+          <text class="dragNumHint">像素</text>
+        </view>
+      </view>
+      <input class="input smallInput" type="number" value="{{gap}}" bindinput="onGapChange" placeholder="0" />
+    </view>
+
+    <view class="row">
+      <button class="primaryBtn" disabled="{{busy}}" bindtap="stitch">开始拼接</button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{result}}">
+    <view class="cardTitle">拼接结果</view>
+    <view class="resultPreview">
+      <image class="resultImage" src="{{result.outputPath}}" mode="widthFix" bindtap="previewResult" />
+      <text class="resultMeta">共 {{images.length}} 张图片 · {{resultSizeKB}}KB</text>
+    </view>
+
+    <view class="actions">
+      <button class="primaryBtn" bindtap="save">保存到相册</button>
+      <button class="ghostBtn" bindtap="share">分享</button>
+    </view>
+  </view>
+
+  <canvas type="2d" id="toolCanvas" class="hiddenCanvas"></canvas>
+</view>

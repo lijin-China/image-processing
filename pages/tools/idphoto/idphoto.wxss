@@ -210,3 +210,25 @@
   color: #1E6FFF;
   font-weight: 500;
 }
+
+.apiWarning {
+  display: flex;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+  border: 2rpx solid #FCD34D;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.warningIcon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.warningText {
+  font-size: 26rpx;
+  color: #92400E;
+  line-height: 1.5;
+}

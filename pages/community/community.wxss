@@ -1,0 +1,304 @@
+/* 朋友圈页面样式 */
+
+/* 头部 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 8rpx 32rpx;
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.publishBtn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  box-shadow: var(--shadow-btn);
+}
+
+.publishIcon {
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* 动态列表 */
+.postList {
+  margin-top: 16rpx;
+}
+
+.postItem {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: var(--shadow-card);
+}
+
+/* 帖子头部 */
+.postHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  margin-right: 20rpx;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.nickName {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.postTime {
+  font-size: 24rpx;
+  color: var(--text-muted);
+  margin-top: 4rpx;
+}
+
+/* 帖子图片 */
+.postImageWrap {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.postImage {
+  width: 100%;
+  display: block;
+}
+
+/* 帖子描述 */
+.postDesc {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+}
+
+/* 互动区域 */
+.postActions {
+  display: flex;
+  align-items: center;
+  padding-top: 16rpx;
+  border-top: 2rpx solid var(--border-light);
+}
+
+.actionItem {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+}
+
+.actionItem.liked {
+  background: rgba(255, 77, 79, 0.1);
+}
+
+.actionIcon {
+  font-size: 32rpx;
+  margin-right: 8rpx;
+}
+
+.actionNum {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.actionItem.liked .actionNum {
+  color: #ff4d4f;
+}
+
+/* 加载状态 */
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.loadingSpinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingText {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+/* 无更多数据 */
+.noMore {
+  text-align: center;
+  padding: 40rpx;
+  font-size: 26rpx;
+  color: var(--text-muted);
+}
+
+/* 空状态 */
+.empty {
+  margin-top: 160rpx;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.emptyTitle {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.emptySub {
+  margin: 16rpx 0 40rpx;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 弹窗 */
+.modalMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  width: 90%;
+  max-width: 640rpx;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.modalTitle {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modalClose {
+  font-size: 48rpx;
+  color: var(--text-muted);
+  line-height: 1;
+  padding: 8rpx;
+}
+
+/* 图片选择器 */
+.imagePicker {
+  width: 100%;
+  height: 400rpx;
+  border-radius: var(--radius-md);
+  border: 2rpx dashed var(--border-color);
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+}
+
+.placeholderIcon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.placeholderText {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 描述输入 */
+.descInputWrap {
+  margin-bottom: 24rpx;
+}
+
+.descInput {
+  width: 100%;
+  height: 160rpx;
+  padding: 20rpx;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 28rpx;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.charCount {
+  text-align: right;
+  font-size: 24rpx;
+  color: var(--text-muted);
+  margin-top: 8rpx;
+}
